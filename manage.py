@@ -19,11 +19,7 @@ commands_dict.update({help_command: get_help})
 if __name__ == "__main__":
     try:
         input_command = sys.argv[1]
-    except IndexError:
-        commands_dict[help_command]()
-    else:
         params = sys.argv[2:]
-        if input_command:
-            commands_dict[input_command](*params)
-        else:
-            commands_dict[help_command]()
+        commands_dict[input_command](*params)
+    except (KeyError, IndexError):
+        commands_dict[help_command]()
