@@ -1,2 +1,2 @@
 def some_middleware(request: dict):
-    print("My middleware")
+    request.update({"my_middleware_key": "My middleware param"})
