@@ -1,7 +1,6 @@
 import importlib
 
-from settings import APPS
-from wsgi_framework.config import AppModules
+from wsgi_framework.config import APPS, AppModules
 
 main_router = dict()
 

@@ -3,7 +3,7 @@ import subprocess
 import sys
 from time import sleep
 
-command = "python manage.py run"
+command = "python manage.py startserver"
 if platform.system().lower() == "windows":
     server_task = subprocess.Popen(command, creationflags=subprocess.CREATE_NEW_CONSOLE)  # type: ignore
 else:
