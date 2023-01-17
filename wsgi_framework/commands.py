@@ -1,1 +1,1 @@
-from wsgi_framework.main import startserver
+from wsgi_framework.main import startserver  # NOQA
