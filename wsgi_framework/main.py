@@ -6,7 +6,7 @@ from wsgi_framework.front_controller import applied_middleware
 from wsgi_framework.router import main_router
 
 
-def run(port: int | str = ServerConf.port):
+def startserver(port: int | str = ServerConf.port):
     application = Application(routes=main_router, fronts=applied_middleware)
     port = int(port) or ServerConf.port
 

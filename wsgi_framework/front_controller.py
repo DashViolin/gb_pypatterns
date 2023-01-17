@@ -2,8 +2,7 @@ import importlib
 from inspect import getmembers, isfunction
 
 import wsgi_framework.builtin_middleware as builtin_middleware_module
-from settings import APPS, MIDDLEWARE
-from wsgi_framework.config import AppModules
+from wsgi_framework.config import APPS, MIDDLEWARE, AppModules
 
 builtin_middleware = dict(getmembers(builtin_middleware_module, isfunction))
 applied_middleware = dict(filter(lambda x: x[0] in MIDDLEWARE, builtin_middleware.items()))
