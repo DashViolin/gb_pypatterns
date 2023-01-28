@@ -1,2 +1,5 @@
-def some_middleware(request: dict):
-    request.update({"my_middleware_key": "My middleware param"})
+from datetime import date
+
+
+def date_middleware(request: dict):
+    request["date"] = date.today()

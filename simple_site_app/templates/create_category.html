@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Создание категории курсов</h1>
+  <div>
+    <a href="/categories/">Назад</a>
+  </div>
+
+  <br>
+  <br>
+
+  <form action="/categories-create/" method="post">
+    <input type="text" name="name" placeholder="Название">
+    <button type="submit">Сохранить и вернуться на главную</button>
+  </form>
+
+  {% include 'include/categories.html' %}
+
+{% endblock %}

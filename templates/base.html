@@ -19,11 +19,13 @@
       {% include 'include/logo.html' %}
       {% include 'include/menu.html' %}
     </div>
-    <div id="site_content">      
+    <div id="site_content">
       {% include 'include/sidebar.html' %}
-      {% block content %}
-        Lorem ipsum...
-      {% endblock content %}
+      <div id="content">
+        {% block content %}
+          Lorem ipsum...
+        {% endblock content %}
+      </div>
     </div>
     <div id="content_footer">
       {% include 'include/footer.html' %}

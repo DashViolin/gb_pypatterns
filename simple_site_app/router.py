@@ -1,9 +1,14 @@
-from .views import about_view, index_view, not_found_view, page_view
+from .views import About, Categories, CopyCourse, Courses, CreateCategory, CreateCourse, Index, NotFound404, Programs
 
 routes = {
-    "/": index_view,
-    "/index/": index_view,
-    "/page/": page_view,
-    "/about/": about_view,
-    None: not_found_view,
+    "/": Index(),
+    "/index/": Index(),
+    "/about/": About(),
+    "/programs/": Programs(),
+    "/categories/": Categories(),
+    "/categories-create/": CreateCategory(),
+    "/courses/": Courses(),
+    "/courses-create/": CreateCourse(),
+    "/courses-copy/": CopyCourse(),
+    None: NotFound404(),
 }

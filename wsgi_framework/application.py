@@ -16,11 +16,12 @@ class Application:
             raise TypeError("Нужно определить маршрут None с представлением по умолчанию для обработки ошибки 404")
         request = {}
         method = environ["REQUEST_METHOD"]
+        request["method"] = method
         match method:
             case "GET":
                 query_string = environ["QUERY_STRING"]
-                self.__parse_params(query_string, request)
                 if query_string:
+                    self.__parse_params(query_string, request)
                     self.__print_params(method, request)
             case "POST":
                 content_length_data = environ.get("CONTENT_LENGTH")
