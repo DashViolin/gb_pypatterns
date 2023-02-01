@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Создание курса</h1>
+
+  {% if category %}
+    <div>
+      <h2>Категория: <b>"{{ category.name }}"</b></h1>
+      <a href="/courses/?id={{ category.id }}">Назад</a>
+    </div>
+  {% endif %}
+
+  <br>
+  <br>
+
+  <div>
+    <form action="/courses-create/" method="post">
+      <p><input type="text" name="name" placeholder="Название"></p>
+      <p>
+        <select name="course_type">
+          {% for course_type in courses_types %}
+            <option value="{{ course_type }}">{{ course_type }}</option>
+          {% endfor %}
+        </select>
+      </p>
+      <p><button type="submit">Сохранить и вернуться к списку курсов</button></p>
+    </form>
+  </div>
+{% endblock %}

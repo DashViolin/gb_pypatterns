@@ -15,8 +15,8 @@ def render(template_name, **kwargs) -> str:
     caller_function = inspect.stack()[1]
     caller_module = inspect.getmodule(caller_function[0])
     app_name = caller_module.__name__.split(".")[0]
-    app_templates_folder = str(BASE_DIR / app_name / APP_TEMPLATES_DIR_NAME)
 
+    app_templates_folder = str(BASE_DIR / app_name / APP_TEMPLATES_DIR_NAME)
     base_templates_folder = str(BASE_TEMPLATES_PATH)
     base_static_folder = str(BASE_STATIC_PATH)
 

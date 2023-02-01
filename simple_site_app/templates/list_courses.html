@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Список курсов</h1>
+  
+  {% if category %}
+    <h2>Категория: {{ category.name }}</h2>
+    <div>
+      <a href="/courses-create/?id={{ category.id }}">Создать новый курс</a>
+    </div>
+  {% endif %}
+  
+  {% include 'include/courses.html' %}
+
+{% endblock %}

@@ -9,7 +9,7 @@
             "type": "python",
             "request": "launch",
             "program": "manage.py",
-            "args": ["run"],
+            "args": ["startserver"],
             "console": "integratedTerminal",
             "justMyCode": true
         },

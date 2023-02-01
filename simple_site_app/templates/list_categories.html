@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-  <h1>Добро пожаловать на наш сайт!</h1>
-
+  <h1>Категории курсов</h1>
   <div>
     <a href="/categories-create/">Создать новую категорию</a>
   </div>
+
+  {% include 'include/categories.html' %}
 
 {% endblock %}

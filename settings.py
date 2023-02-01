@@ -15,5 +15,5 @@ APP_TEMPLATES_DIR_NAME = "templates"
 MIDDLEWARE = [
     "secret_front",
     "other_front",
-    "some_middleware",
+    "date_middleware",
 ]

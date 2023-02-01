@@ -1,0 +1,14 @@
+{% if categories %}
+  <div>
+    <h2>Список категорий</h2>
+    {% for category in categories %}
+      <li>
+        <h4>{{ category.name }}</h4>
+        <span>Количество курсов: {{ category.course_count() }}</span>
+        <a href="/courses/?id={{ category.id }}">Посмотреть курсы</a>
+      </li>
+    {% endfor %}
+  </div>
+{% else %}
+  <h2>Категорий курсов пока нет...</h2>
+{% endif %}
