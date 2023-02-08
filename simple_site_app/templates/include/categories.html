@@ -3,9 +3,10 @@
     <h2>Список категорий</h2>
     {% for category in categories %}
       <li>
-        <h4>{{ category.name }}</h4>
+        <h4>{{ category.full_name }}</h4>
         <span>Количество курсов: {{ category.course_count() }}</span>
-        <a href="/courses/?id={{ category.id }}">Посмотреть курсы</a>
+        <a href="/courses/?category_id={{ category.id }}">Посмотреть курсы</a>
+        <a href="/courses-create/?category_id={{ category.id }}">Создать новый курс</a>
       </li>
     {% endfor %}
   </div>

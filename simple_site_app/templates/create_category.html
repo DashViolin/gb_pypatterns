@@ -10,7 +10,17 @@
   <br>
 
   <form action="/categories-create/" method="post">
-    <input type="text" name="name" placeholder="Название">
+    <p><input type="text" name="name" placeholder="Название"></p>
+    {% if categories %}
+      <p>
+        <select name="category_id">
+          <option value="0">Включить подкатегорию</option>
+          {% for category in categories %}
+            <option value="{{ category.id }}">{{ category.full_name }}</option>
+          {% endfor %}
+        </select>
+      </p>
+    {% endif %}
     <button type="submit">Сохранить и вернуться на главную</button>
   </form>
 

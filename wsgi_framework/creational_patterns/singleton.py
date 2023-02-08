@@ -1,7 +1,4 @@
-from datetime import datetime
-
-
-class SingletonByName(type):
+class SingletonByNameMeta(type):
     def __init__(cls, name, bases, attrs, **kwargs):
         cls.__instance = {}
         super().__init__(name, bases, attrs)
@@ -17,9 +14,12 @@ class SingletonByName(type):
         return cls.__instance[name]
 
 
-class Logger(metaclass=SingletonByName):
-    def __init__(self, name: str):
-        self.name = name
+class SingletonMeta(type):
+    def __init__(cls, name, bases, attrs, **kwargs):
+        cls.__instance = None
+        super().__init__(name, bases, attrs)
 
-    def log(self, message: str):
-        print(f"[{datetime.now().replace(microsecond=0)}] LOGGER: '{self.name}' -->", message)
+    def __call__(cls, *args, **kwargs):
+        if not cls.__instance:
+            cls.__instance = super().__call__(*args, **kwargs)
+        return cls.__instance

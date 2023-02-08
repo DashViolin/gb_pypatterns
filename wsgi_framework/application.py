@@ -1,7 +1,12 @@
+from wsgi_framework.requests_parser import RequestParser
+
+
 class Application:
-    def __init__(self, routes: dict, fronts: list):
+    def __init__(self, routes: dict, fronts: list, debug_mode: bool = False):
         self.routes = routes
         self.fronts = fronts
+        self.request_parser = RequestParser()
+        self.debug_mode = debug_mode
 
     def __call__(self, environ, start_response):
         """
@@ -17,37 +22,31 @@ class Application:
         request = {}
         method = environ["REQUEST_METHOD"]
         request["method"] = method
+        # TODO: refactor that
         match method:
             case "GET":
-                query_string = environ["QUERY_STRING"]
-                if query_string:
-                    self.__parse_params(query_string, request)
-                    self.__print_params(method, request)
+                self.request_parser.parse_get_params(environ, request)
             case "POST":
-                content_length_data = environ.get("CONTENT_LENGTH")
-                content_length = int(content_length_data) if content_length_data else 0
-                data = environ["wsgi.input"].read(content_length) if content_length > 0 else b""
-                if data:
-                    params_str = data.decode(encoding="utf-8")
-                    self.__parse_params(params_str, request)
-                    self.__print_params(method, request)
+                self.request_parser.parse_post_params(environ, request)
             case _:
                 pass
 
         for front in self.fronts:
             front(request)
 
+        if self.debug_mode:
+            self.request_parser.print_params(request)
+
         code, body_text = view(request)
         body = [body_text.encode()]
         start_response(code, [("Content-Type", "text/html")])
         return body
 
-    def __parse_params(self, query: str, request: dict):
-        if query:
-            params = {key: value for key, value in map(lambda item: item.split("="), query.split("&"))}
-            request.update(params)
 
-    def __print_params(self, method: str, params: dict):
-        params_str = ", ".join(f"{key} = {value}" for key, value in params.items())
-        info = f"\nMETHOD: {method}\nPARAMS: {params_str}\n"
-        print(info)
+class FakeApplication(Application):
+    def __init__(self, routes: dict, fronts: list):
+        super().__init__(routes, fronts)
+
+    def __call__(self, env, start_response):
+        start_response("200 OK", [("Content-Type", "text/html")])
+        return [b"Hello from Fake Application"]

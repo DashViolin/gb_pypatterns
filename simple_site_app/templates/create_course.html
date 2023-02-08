@@ -5,8 +5,8 @@
 
   {% if category %}
     <div>
-      <h2>Категория: <b>"{{ category.name }}"</b></h1>
-      <a href="/courses/?id={{ category.id }}">Назад</a>
+      <h2>Категория: <b>"{{ category.full_name }}"</b></h1>
+      <a href="/courses/?category_id={{ category.id }}">Назад</a>
     </div>
   {% endif %}
 

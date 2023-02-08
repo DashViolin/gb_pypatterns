@@ -1,5 +1,7 @@
 import pathlib
 
+DEBUG_MODE = True
+
 BASE_DIR = pathlib.Path().resolve()
 
 BASE_TEMPLATES_PATH = BASE_DIR / "templates"

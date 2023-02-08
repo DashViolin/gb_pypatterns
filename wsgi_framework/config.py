@@ -1,6 +1,11 @@
 from settings import *
 
 try:
+    DEBUG_MODE = DEBUG_MODE
+except NameError:
+    DEBUG_MODE = False
+
+try:
     BASE_TEMPLATES_PATH = BASE_TEMPLATES_PATH
 except NameError:
     BASE_TEMPLATES_PATH = BASE_DIR / "templates"
