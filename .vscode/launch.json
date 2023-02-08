@@ -14,6 +14,24 @@
             "justMyCode": true
         },
         {
+            "name": "Run debug server",
+            "type": "python",
+            "request": "launch",
+            "program": "manage.py",
+            "args": ["startserver", "8000", "debug"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Run fake server",
+            "type": "python",
+            "request": "launch",
+            "program": "manage.py",
+            "args": ["startserver", "8000", "fake"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",

@@ -4,22 +4,9 @@
     {% for course in courses %}
       <li>
         <h3>{{ course.name }}</h3>
-        <p>Категория: <b>{{ course.category.name }}</b></p>
+        <p>Категория: <b>{{ course.category.full_name }}</b></p>
       </li>
     {% endfor %}
-  </div>
-  </br>
-  <div>
-    <h4>Создать копию курса</h4>
-    <form action="/courses-copy/" method="post">
-      <select name="course_name">
-        <option disabled>Выберите курс</option>
-        {% for course in courses %}
-          <option value="{{ course.name }}">{{ course.name }}</option>
-        {% endfor %}
-      </select>
-      <button type="submit">Создать копию</button>
-    </form>
   </div>
 
 {% else %}

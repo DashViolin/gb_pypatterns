@@ -1,12 +1,19 @@
 class Category:
-    auto_id = 0
+    auto_id = 1
 
     def __init__(self, name, category=None):
         self.id = Category.auto_id
         Category.auto_id += 1
         self.name = name
-        self.category = category
+        self.category: "Category" = category
         self.courses = []
+
+    @property
+    def full_name(self):
+        name = self.name
+        # if self.category:
+        #     name = f'{self.category.full_name} / {name}'
+        return name
 
     def course_count(self):
         result = len(self.courses)

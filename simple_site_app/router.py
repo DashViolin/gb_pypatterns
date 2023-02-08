@@ -1,14 +1,13 @@
-from .views import About, Categories, CopyCourse, Courses, CreateCategory, CreateCourse, Index, NotFound404, Programs
+from .views import CopyCourse, CreateCategory, CreateCourse, Index
+
+"""
+Адреса, задаваемые в данном файле, имеют высший приоритет по отношению к адресам, 
+регистрируемым с использованием декоратора route
+"""
 
 routes = {
     "/": Index(),
-    "/index/": Index(),
-    "/about/": About(),
-    "/programs/": Programs(),
-    "/categories/": Categories(),
     "/categories-create/": CreateCategory(),
-    "/courses/": Courses(),
     "/courses-create/": CreateCourse(),
     "/courses-copy/": CopyCourse(),
-    None: NotFound404(),
 }
