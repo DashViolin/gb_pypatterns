@@ -1,128 +1,95 @@
+from wsgi_framework.behavioral_patterns.observer import EmailNotifier, SmsNotifier
+from wsgi_framework.behavioral_patterns.serializer import BaseSerializer
+from wsgi_framework.behavioral_patterns.template_method import CreateView, ListView
 from wsgi_framework.creational_patterns.engine import Engine
 from wsgi_framework.logger import Logger
-from wsgi_framework.structural_patterns.decorators import debug, route
+from wsgi_framework.structural_patterns.decorators import route
 from wsgi_framework.templator import render
 
 site = Engine()
 logger = Logger("main")
+email_notifier = EmailNotifier()
+sms_notifier = SmsNotifier()
 
 
 @route(url=None)
-@debug
-def not_found_404(request: dict):
+class NotFound404(ListView):
     template = "not_found.html"
+    context = {"set_active": "index"}
+
+
+@route(url=("/index/", "/"))
+class Index(ListView):
+    template = "index.html"
     context = {
         "set_active": "index",
+        "categories": site.categories,
     }
-    return "404 Not Found", render(template, **context)
-
-
-@route(url="/index/")
-class Index:
-    @debug
-    def __call__(self, request: dict):
-        logger.log("Главная")
-
-        template = "index.html"
-        context = {
-            "set_active": "index",
-            "categories": site.categories,
-        }
-        return "200 OK", render(template, **context)
 
 
 @route(url="/about")
-class About:
-    @debug
-    def __call__(self, request: dict):
-        logger.log("Контакты")
-
-        template = "about.html"
-        context = {"set_active": "about"}
-        return "200 OK", render(template, **context)
+class About(ListView):
+    template = "about.html"
+    context = {"set_active": "about"}
 
 
 @route(url="programs")
-class Programs:
-    @debug
-    def __call__(self, request: dict):
-        logger.log("Программы обучения")
-
-        template = "list_programs.html"
-        context = {
-            "set_active": "programs",
-            "date": request["date"],
-        }
-        return "200 OK", render(template, **context)
+class Programs(ListView):
+    template = "list_programs.html"
+    context = {"set_active": "programs"}
 
 
 @route(url="categories")
-class Categories:
-    @debug
-    def __call__(self, request: dict):
-        logger.log("Список категорий")
-
-        template = "list_categories.html"
-        context = {
-            "set_active": "categories",
-            "categories": site.categories,
-        }
-        return "200 OK", render(template, **context)
+class Categories(ListView):
+    template = "list_categories.html"
+    queryset = site.categories
+    context = {"set_active": "categories"}
 
 
-class CreateCategory:
-    @debug
-    def __call__(self, request: dict):
-        logger.log("Создание категории")
+class CreateCategory(CreateView):
+    template = "create_category.html"
+    queryset = site.categories
+    context = {"set_active": "categories"}
 
-        if request["method"] == "POST":
-            template = "create_category.html"
-            name = request["name"]
-            category = site.find_category_by_id(request.get("category_id"))
-            site.create_category(name, category)
-        else:
-            template = "create_category.html"
-        context = {
-            "set_active": "categories",
-            "categories": site.categories,
-        }
-        return "200 OK", render(template, **context)
+    def process_query(self, query: dict):
+        self.category_id = query.get("category_id")
+
+    def create_obj(self, data):
+        name = data["name"]
+        category = site.find_category_by_id(self.category_id)
+        site.create_category(name, category)
 
 
 @route(url="/courses")
-class Courses:
-    @debug
-    def __call__(self, request: dict):
-        logger.log("Список курсов")
+class Courses(ListView):
+    template = "list_courses.html"
+    context = {"set_active": "courses"}
 
-        template = "list_courses.html"
-        category = site.find_category_by_id(request.get("category_id"))
-        context = {
-            "set_active": "courses",
-            "category": category,
-            "courses": category.courses if category else site.courses,
-        }
-        return "200 OK", render(template, **context)
+    def process_query(self, query: dict):
+        category = site.find_category_by_id(query.get("category_id"))
+        self.queryset = category.courses if category else site.courses
+        self.context["category"] = category
 
 
-class CreateCourse:
+class CreateCourse(CreateView):
     category_id = -1
 
-    @debug
     def __call__(self, request: dict):
         logger.log("Создание курса")
 
         if request["method"] == "POST":
             template = "list_courses.html"
-            name = request["name"]
-            course_type = request["course_type"]
+            name = request["data"]["name"]
+            course_type = request["data"]["course_type"]
             category = site.find_category_by_id(self.category_id)
-            site.create_course(course_type, name, category)
+            course = site.create_course(course_type, name, category)
+            course.observers.append(email_notifier)
+            course.observers.append(sms_notifier)
         elif request["method"] == "GET":
-            category_id = request.get("category_id")
+            category_id = request["query"].get("category_id")
             if category_id:
                 template = "create_course.html"
-                self.category_id = request["category_id"]
+                self.category_id = category_id
             else:
                 template = "list_courses.html"
 
@@ -130,29 +97,62 @@ class CreateCourse:
         context = {
             "set_active": "courses",
             "category": category,
-            "courses": category.courses if category else None,
+            "objects_list": category.courses if category else None,
             "courses_types": site.courses_types,
         }
-        return "200 OK", render(template, **context)
+        return "200 OK", render(template, self.app_name, **context)
 
 
-class CopyCourse:
-    @debug
-    def __call__(self, request: dict):
-        logger.log("Копирование курса")
-        template = "list_courses.html"
-        context = {
-            "set_active": "courses",
-            "courses": site.courses,
-        }
+class CopyCourse(CreateView):
+    template = "list_courses.html"
+    context = {
+        "set_active": "courses",
+        "objects_list": site.courses,
+    }
 
-        name = request.get("course_name")
+    def create_obj(self, data: dict):
+        name = data.get("course_name")
         old_course = site.get_course_by_name(name)
         if old_course:
             new_course = old_course.clone()
             new_course.name = f"copy_{name}"
             old_course.category.add_course(new_course)
             site.courses.append(new_course)
-            context["category"] = new_course.category.name
+            self.context["category"] = new_course.category.name
 
-        return "200 OK", render(template, **context)
+
+@route(url="/students/")
+class StudentListView(ListView):
+    queryset = site.students
+    template = "list_students.html"
+    context = {"set_active": "students"}
+
+
+@route(url="/create-student/")
+class StudentCreateView(CreateView):
+    template = "create_student.html"
+    context = {"set_active": "students"}
+
+    def create_obj(self, data: dict):
+        name = data["student_name"]
+        site.create_user("student", name)
+
+
+@route(url="/add-student/")
+class AddStudentToCourseView(CreateView):
+    template = "add_student_to_course.html"
+    context = {
+        "courses": site.courses,
+        "students": site.students,
+    }
+
+    def create_obj(self, data: dict):
+        student = site.get_student(data["student_name"])
+        course = site.get_course_by_name(data["course_name"])
+        course.add_student(student)
+
+
+@route(url="/api/")
+class CourseApi:
+    def __call__(self, request):
+        return "200 OK", BaseSerializer(site.courses).save()

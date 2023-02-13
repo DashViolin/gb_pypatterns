@@ -3,23 +3,27 @@ from inspect import isclass
 from time import time
 from typing import Callable
 
-from wsgi_framework.router import main_router, prettiry_url
+from wsgi_framework.router import main_router, prettify_url
 
 
-def route(url: str | None):
+def route(url: str | tuple | None):
     """Регистрирует представление в роутере фреймворка.
     Подходит для представлений на базе функций и классов.
     Для обработки ошибки 404 используйте значение параметра url=None.
 
     Args:
-        url (str | None): строка пути, только ASCII, символы "/" в начале и конце добавляются автоматически.
+        url (str | tuple | None): строка или кортеж путей, только ASCII, символы "/" в начале и конце добавляются автоматически.
     """
 
     def decorator(callable: Callable):
-        if url and not url.isascii():
-            raise ValueError('Путь должен состоять только из латинских букв и символа "/"')
-
-        main_router[prettiry_url(url)] = callable() if isclass(callable) else callable
+        urls = url
+        if isinstance(url, list):
+            urls = tuple(url)
+        urls = urls if isinstance(urls, tuple) else (urls,)
+        for curr_url in urls:
+            if curr_url and not curr_url.isascii():
+                raise ValueError('Путь должен состоять только из латинских букв и символа "/"')
+            main_router[prettify_url(curr_url)] = callable() if isclass(callable) else callable
 
         @wraps(callable)
         def wrapper(*args, **kwargs):

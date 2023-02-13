@@ -8,18 +8,20 @@
     <div>
       <a href="/courses-create/?category_id={{ category.id }}">Создать новый курс</a>
     </div>
-    <div>
-      <h4>Создать копию курса</h4>
-      <form action="/courses-copy/" method="post">
-        <select name="course_name">
-          <option disabled>Выберите курс</option>
-          {% for course in courses %}
-            <option value="{{ course.name }}">{{ course.name }}</option>
-          {% endfor %}
-        </select>
-        <button type="submit">Создать копию</button>
-      </form>
-    </div>
+    {% if objects_list %}
+      <div>
+        <h4>Создать копию курса</h4>
+        <form action="/courses-copy/" method="post">
+          <select name="course_name">
+            <option disabled>Выберите курс</option>
+            {% for course in objects_list %}
+              <option value="{{ course.name }}">{{ course.name }}</option>
+            {% endfor %}
+          </select>
+          <button type="submit">Создать копию</button>
+        </form>
+      </div>
+    {% endif %}
     </br>
   {% endif %}
   

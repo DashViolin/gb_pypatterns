@@ -2,6 +2,9 @@ from quopri import decodestring
 
 
 class RequestParser:
+    query_data_tag = "query"
+    post_data_tag = "data"
+
     def _decode_param(self, value: str) -> str:
         bytes_val = bytes(value.replace("%", "=").replace("+", " "), "UTF-8")
         return decodestring(bytes_val).decode("UTF-8")
@@ -24,14 +27,12 @@ class RequestParser:
         params_str = data.decode(encoding="UTF-8")
         return self._parse_params(params_str)
 
-    def parse_get_params(self, environ: dict, request: dict) -> None:
-        query = self._parse_query_params(environ)
-        request.update(**query)
+    def parse_query_params(self, environ: dict, request: dict) -> None:
+        request[self.query_data_tag] = self._parse_query_params(environ)
 
     def parse_post_params(self, environ: dict, request: dict) -> None:
-        self.parse_get_params(environ, request)
-        data = self._parse_data_params(environ)
-        request.update(**data)
+        self.parse_query_params(environ, request)
+        request[self.post_data_tag] = self._parse_data_params(environ)
 
     @staticmethod
     def print_params(request: dict) -> None:

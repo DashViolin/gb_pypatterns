@@ -13,13 +13,12 @@ class Engine:
         self.categories: list[Category] = []
         self.courses: list[InteractiveCourse | RecordCourse] = []
 
-    def create_user(self, type_: str) -> Student | Teacher:
-        user = UserFactory.create(type_)
+    def create_user(self, type_: str, name: str) -> Student | Teacher:
+        user = UserFactory.create(type_, name)
         if isinstance(user, Student):
             self.students.append(user)
         else:
             self.teachers.append(user)
-        return user
 
     def create_course(self, type_: str, name: str, category: Category) -> InteractiveCourse | RecordCourse:
         course = CourseFactory.create(type_, name, category)
@@ -43,3 +42,8 @@ class Engine:
             if course.name == name:
                 return course
         return None
+
+    def get_student(self, name) -> Student:
+        for item in self.students:
+            if item.name == name:
+                return item

@@ -4,7 +4,8 @@ from wsgi_framework.creational_patterns.constants import student_type, teacher_t
 
 
 class User(ABC):
-    pass
+    def __init__(self, name):
+        self.name = name
 
 
 class Teacher(User):
@@ -12,12 +13,14 @@ class Teacher(User):
 
 
 class Student(User):
-    pass
+    def __init__(self, name):
+        self.courses = []
+        super().__init__(name)
 
 
 class UserFactory:
     types = {student_type: Student, teacher_type: Teacher}
 
     @classmethod
-    def create(cls, type_):
-        return cls.types[type_]()
+    def create(cls, type_, name):
+        return cls.types[type_](name)

@@ -11,17 +11,17 @@
 
   <form action="/categories-create/" method="post">
     <p><input type="text" name="name" placeholder="Название"></p>
-    {% if categories %}
+    {% if objects_list %}
       <p>
         <select name="category_id">
           <option value="0">Включить подкатегорию</option>
-          {% for category in categories %}
+          {% for category in objects_list %}
             <option value="{{ category.id }}">{{ category.full_name }}</option>
           {% endfor %}
         </select>
       </p>
     {% endif %}
-    <button type="submit">Сохранить и вернуться на главную</button>
+    <button type="submit">Сохранить</button>
   </form>
 
   {% include 'include/categories.html' %}

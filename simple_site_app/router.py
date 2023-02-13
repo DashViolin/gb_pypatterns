@@ -1,4 +1,4 @@
-from .views import CopyCourse, CreateCategory, CreateCourse, Index
+from .views import CopyCourse, CreateCategory, CreateCourse
 
 """
 Адреса, задаваемые в данном файле, имеют высший приоритет по отношению к адресам, 
@@ -6,8 +6,7 @@ from .views import CopyCourse, CreateCategory, CreateCourse, Index
 """
 
 routes = {
-    "/": Index(),
-    "/categories-create/": CreateCategory(),
-    "/courses-create/": CreateCourse(),
-    "/courses-copy/": CopyCourse(),
+    "/categories-create/": CreateCategory,
+    "/courses-create/": CreateCourse,
+    "/courses-copy/": CopyCourse,
 }

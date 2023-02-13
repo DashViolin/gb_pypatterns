@@ -1,7 +1,7 @@
-{% if categories %}
+{% if objects_list %}
   <div>
     <h2>Список категорий</h2>
-    {% for category in categories %}
+    {% for category in objects_list %}
       <li>
         <h4>{{ category.full_name }}</h4>
         <span>Количество курсов: {{ category.course_count() }}</span>
