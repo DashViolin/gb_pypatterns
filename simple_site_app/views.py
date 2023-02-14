@@ -2,14 +2,19 @@ from wsgi_framework.behavioral_patterns.observer import EmailNotifier, SmsNotifi
 from wsgi_framework.behavioral_patterns.serializer import BaseSerializer
 from wsgi_framework.behavioral_patterns.template_method import CreateView, ListView
 from wsgi_framework.creational_patterns.engine import Engine
-from wsgi_framework.logger import Logger
+from wsgi_framework.logger import ConsoleWriter, FileWriter, Logger
 from wsgi_framework.structural_patterns.decorators import route
 from wsgi_framework.templator import render
 
 site = Engine()
-logger = Logger("main")
 email_notifier = EmailNotifier()
 sms_notifier = SmsNotifier()
+
+console_writer = ConsoleWriter()
+file_writer = FileWriter("main.log")
+logger = Logger("main")
+logger.add_writer(console_writer)
+logger.add_writer(file_writer)
 
 
 @route(url=None)
@@ -69,6 +74,27 @@ class Courses(ListView):
         category = site.find_category_by_id(query.get("category_id"))
         self.queryset = category.courses if category else site.courses
         self.context["category"] = category
+
+
+@route(url="/course-edit")
+class EditCourse(CreateView):
+    template = "edit_course.html"
+    context = {"set_active": "courses"}
+    course = None
+
+    def process_query(self, query: dict):
+        course = site.get_course_by_name(query["course-name"])
+        if course:
+            self.course = course
+            self.queryset = site.categories
+            self.context["course"] = self.course
+
+    def create_obj(self, data):
+        new_name = data["name"]
+        new_category = site.find_category_by_id(data["category_id"])
+        logger.log(f"new_name={new_name}, {self.course}, {new_category}")
+        self.course.name = new_name
+        self.course.category = new_category
 
 
 class CreateCourse(CreateView):

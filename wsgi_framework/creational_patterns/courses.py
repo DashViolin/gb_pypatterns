@@ -27,6 +27,12 @@ class Course(CoursePrototype, Subject):
             student.courses.append(self)
         self.notify()
 
+    def __str__(self) -> str:
+        return f"Курс: {self.name}"
+
+    def __iter__(self):
+        return iter(self.students)
+
 
 class InteractiveCourse(Course):
     pass

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Редактирование курса</h1>
+
+  <div>
+    <form action="/course-edit/?course-name={{ course.name }}" method="post">
+      <p>Название:</p>
+      <p><input type="text" name="name" value={{ course.name }}></p>
+      <p>Категория:</p>
+      <p>
+        <select name="category_id">
+          {% for new_category in objects_list %}
+            <option {% if new_category.name==course.category.name %}selected="selected"{% endif %} value="{{ new_category.id }}">
+              {{ new_category.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </p>
+      <p><button type="submit">Сохранить</button></p>
+    </form>
+  </div>
+
+{% endblock %}

@@ -18,9 +18,12 @@ class TemplateView:
     def get_context_data(self):
         return self.context
 
+    def get_template(self):
+        return self.template
+
     def render_template_with_context(self):
         context = self.get_context_data()
-        return "200 OK", render(self.template, self.app_name, **context)
+        return "200 OK", render(self.get_template(), self.app_name, **context)
 
     def __call__(self, request):
         query = self.get_query_data(request)
