@@ -13,19 +13,13 @@ class Application:
         :param environ: словарь данных от сервера
         :param start_response: функция для ответа серверу
         """
-        endpoint = environ["PATH_INFO"]
-        endpoint = endpoint if endpoint.endswith("/") else f"{endpoint}/"
-        try:
-            view = self.routes.get(endpoint) or self.routes[None]
-        except KeyError:
-            raise TypeError("Нужно определить маршрут None с представлением по умолчанию для обработки ошибки 404")
         request = {}
         method = environ["REQUEST_METHOD"]
         request["method"] = method
-        # TODO: refactor that
+
         match method:
             case "GET":
-                self.request_parser.parse_get_params(environ, request)
+                self.request_parser.parse_query_params(environ, request)
             case "POST":
                 self.request_parser.parse_post_params(environ, request)
             case _:
@@ -36,6 +30,13 @@ class Application:
 
         if self.debug_mode:
             self.request_parser.print_params(request)
+
+        endpoint: str = environ["PATH_INFO"]
+        endpoint = endpoint if endpoint.endswith("/") else f"{endpoint}/"
+        try:
+            view = self.routes.get(endpoint) or self.routes[None]
+        except KeyError:
+            raise TypeError("Нужно определить маршрут None с представлением по умолчанию для обработки ошибки 404")
 
         code, body_text = view(request)
         body = [body_text.encode()]

@@ -23,3 +23,9 @@ class Category:
 
     def add_course(self, course):
         self.courses.append(course)
+
+    def __str__(self) -> str:
+        return f"Категория: {self.name}"
+
+    def __iter__(self):
+        return iter(self.courses)

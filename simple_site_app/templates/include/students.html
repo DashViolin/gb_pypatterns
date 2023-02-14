@@ -1,0 +1,19 @@
+{% if objects_list %}
+
+  <div>
+    {% for student in objects_list %}
+      <li>
+        <p>{{student.name}}
+        {% if student.courses %}
+          ({% for course in student.courses %}<i>{{course.name}} </i>{% endfor %})
+        </p>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </div>
+
+{% else %}
+
+  <h2>Студентов пока нет...</h2>
+
+{% endif %}
