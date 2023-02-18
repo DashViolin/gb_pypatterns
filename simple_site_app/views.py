@@ -143,7 +143,7 @@ class CopyCourse(CreateView):
             new_course = old_course.clone()
             new_course.name = f"copy_{name}"
             old_course.category.add_course(new_course)
-            site.courses.append(new_course)
+            site.create_course(new_course)
             self.context["category"] = new_course.category.name
 
 
@@ -175,7 +175,7 @@ class AddStudentToCourseView(CreateView):
     def create_obj(self, data: dict):
         student = site.get_student(data["student_name"])
         course = site.get_course_by_name(data["course_name"])
-        course.add_student(student)
+        site.add_student_to_course(student, course)
 
 
 @route(url="/api/")

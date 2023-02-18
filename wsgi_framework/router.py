@@ -19,7 +19,8 @@ main_router = RouterSingleton()
 
 for app in APPS:
     try:
-        router_module = importlib.import_module(f"{app}.{AppModules.router}")
+        import_path = f"{app}.{AppModules.router}"
+        router_module = importlib.import_module(import_path)
         routes: dict = router_module.routes
         for path, view in routes.items():
             if not callable(view):

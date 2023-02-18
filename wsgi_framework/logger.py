@@ -7,7 +7,7 @@ from wsgi_framework.creational_patterns.singleton import SingletonByNameMeta
 class BaseWriter:
     @staticmethod
     def get_log_entry(message):
-        return f"[{datetime.now().replace(microsecond=0)}] --> {message}"
+        return f"[{datetime.now().replace(microsecond=0)}] --> {message}\n"
 
 
 class ConsoleWriter(BaseWriter):

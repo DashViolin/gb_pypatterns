@@ -1,3 +1,5 @@
+import os
+
 from settings import *
 
 try:
@@ -19,6 +21,21 @@ try:
     MIDDLEWARE = MIDDLEWARE
 except NameError:
     MIDDLEWARE = []
+
+try:
+    SQLITE_DB_PATH = SQLITE_DB_PATH
+except NameError:
+    SQLITE_DB_PATH = BASE_DIR / "data" / "py_patterns.sqlite"
+
+try:
+    SQLITE_DB_INIT_SCRIPT_PATH = SQLITE_DB_INIT_SCRIPT_PATH
+except NameError:
+    SQLITE_DB_INIT_SCRIPT_PATH = BASE_DIR / "data" / "create_db.sql"
+
+
+for path in [SQLITE_DB_PATH.parent, BASE_TEMPLATES_PATH, BASE_STATIC_PATH]:
+    if not path.exists():
+        os.makedirs(path, exist_ok=True)
 
 
 class ServerConf:
