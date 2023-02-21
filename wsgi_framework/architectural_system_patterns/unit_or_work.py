@@ -1,6 +1,6 @@
 from threading import local
 
-from wsgi_framework.architectural_system_patterns.mapper_registry import MapperRegistry
+from wsgi_framework.architectural_system_patterns.data_mappers import MapperRegistry
 
 
 class UnitOfWork:

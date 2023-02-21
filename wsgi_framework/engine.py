@@ -1,8 +1,15 @@
+from wsgi_framework.architectural_system_patterns.data_mappers import (
+    Category,
+    Course,
+    CourseFactory,
+    InteractiveCourse,
+    RecordCourse,
+    Student,
+    Teacher,
+    UserFactory,
+)
 from wsgi_framework.architectural_system_patterns.unit_or_work import MapperRegistry, UnitOfWork
-from wsgi_framework.creational_patterns.category import Category
 from wsgi_framework.creational_patterns.constants import COURSE_TYPES, USER_TYPES
-from wsgi_framework.creational_patterns.courses import Course, CourseFactory, InteractiveCourse, RecordCourse
-from wsgi_framework.creational_patterns.users import Student, Teacher, UserFactory
 
 UnitOfWork.new_current()
 UnitOfWork.get_current().set_mapper_registry(MapperRegistry)
