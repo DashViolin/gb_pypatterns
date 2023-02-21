@@ -19,3 +19,6 @@ MIDDLEWARE = [
     "other_front",
     "date_middleware",
 ]
+
+SQLITE_DB_PATH = BASE_DIR / "data" / "py_patterns.sqlite"
+SQLITE_DB_INIT_SCRIPT_PATH = BASE_DIR / "data" / "create_db.sql"

@@ -1,5 +1,6 @@
 from copy import deepcopy
 
+from wsgi_framework.architectural_system_patterns.domain_object import DomainObject
 from wsgi_framework.behavioral_patterns.observer import Subject
 from wsgi_framework.creational_patterns.constants import interactive_course, record_course
 from wsgi_framework.creational_patterns.users import Student
@@ -10,7 +11,7 @@ class CoursePrototype:
         return deepcopy(self)
 
 
-class Course(CoursePrototype, Subject):
+class Course(CoursePrototype, Subject, DomainObject):
     def __init__(self, name, category):
         self.name = name
         self.category = category
@@ -46,5 +47,5 @@ class CourseFactory:
     types = {interactive_course: InteractiveCourse, record_course: RecordCourse}
 
     @classmethod
-    def create(cls, type_, name, category):
+    def create(cls, type_, name, category) -> InteractiveCourse | RecordCourse:
         return cls.types[type_](name, category)

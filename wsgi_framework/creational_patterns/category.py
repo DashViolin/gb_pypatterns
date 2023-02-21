@@ -1,4 +1,7 @@
-class Category:
+from wsgi_framework.architectural_system_patterns.domain_object import DomainObject
+
+
+class Category(DomainObject):
     auto_id = 1
 
     def __init__(self, name, category=None):

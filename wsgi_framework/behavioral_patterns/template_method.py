@@ -35,8 +35,11 @@ class ListView(TemplateView):
     queryset = []
     context_object_name = "objects_list"
 
+    def get_query_set(self):
+        return self.queryset
+
     def get_context_data(self):
-        self.context[self.context_object_name] = self.queryset
+        self.context[self.context_object_name] = self.get_query_set()
         return super().get_context_data()
 
 
