@@ -1,5 +1,4 @@
-from wsgi_framework.architectural_system_patterns.mapper_registry import MapperRegistry
-from wsgi_framework.architectural_system_patterns.unit_or_work import UnitOfWork
+from wsgi_framework.architectural_system_patterns.unit_or_work import MapperRegistry, UnitOfWork
 from wsgi_framework.creational_patterns.category import Category
 from wsgi_framework.creational_patterns.constants import COURSE_TYPES, USER_TYPES
 from wsgi_framework.creational_patterns.courses import Course, CourseFactory, InteractiveCourse, RecordCourse
@@ -16,7 +15,7 @@ class Engine:
 
     @property
     def students(self) -> list[Student]:
-        mapper = MapperRegistry.get_current_mapper("student")
+        mapper = MapperRegistry.get_mapper("student")
         return mapper.all()
 
     @property
@@ -25,12 +24,12 @@ class Engine:
 
     @property
     def categories(self) -> list[Category]:
-        mapper = MapperRegistry.get_current_mapper("category")
+        mapper = MapperRegistry.get_mapper("category")
         return mapper.all()
 
     @property
     def courses(self) -> list[Course]:
-        mapper = MapperRegistry.get_current_mapper("course")
+        mapper = MapperRegistry.get_mapper("course")
         return mapper.all()
 
     def create_user(self, type_: str, name: str) -> Student | Teacher:

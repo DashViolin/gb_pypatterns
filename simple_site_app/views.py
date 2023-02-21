@@ -1,7 +1,7 @@
 from wsgi_framework.behavioral_patterns.observer import EmailNotifier, SmsNotifier
 from wsgi_framework.behavioral_patterns.serializer import BaseSerializer
 from wsgi_framework.behavioral_patterns.template_method import CreateView, ListView
-from wsgi_framework.creational_patterns.engine import Engine
+from wsgi_framework.engine import Engine
 from wsgi_framework.logger import ConsoleWriter, FileWriter, Logger
 from wsgi_framework.structural_patterns.decorators import route
 from wsgi_framework.templator import render

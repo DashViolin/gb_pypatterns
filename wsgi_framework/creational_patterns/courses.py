@@ -1,6 +1,6 @@
 from copy import deepcopy
 
-from wsgi_framework.architectural_system_patterns.unit_or_work import DomainObject
+from wsgi_framework.architectural_system_patterns.domain_object import DomainObject
 from wsgi_framework.behavioral_patterns.observer import Subject
 from wsgi_framework.creational_patterns.constants import interactive_course, record_course
 from wsgi_framework.creational_patterns.users import Student

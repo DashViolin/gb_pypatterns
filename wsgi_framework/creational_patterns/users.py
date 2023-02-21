@@ -1,6 +1,6 @@
 from abc import ABC
 
-from wsgi_framework.architectural_system_patterns.unit_or_work import DomainObject
+from wsgi_framework.architectural_system_patterns.domain_object import DomainObject
 from wsgi_framework.creational_patterns.constants import student_type, teacher_type
 
 
