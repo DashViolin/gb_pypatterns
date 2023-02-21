@@ -1,7 +1,7 @@
+import importlib
 from inspect import isclass
 
-from simple_site_app.router import routes
-from wsgi_framework.config import APPS
+from wsgi_framework.config import APPS, AppModules
 from wsgi_framework.creational_patterns.singleton import SingletonMeta
 
 
@@ -19,9 +19,9 @@ main_router = RouterSingleton()
 
 for app in APPS:
     try:
-        # import_path = f"{app}.{AppModules.router}"
-        # router_module = importlib.import_module(import_path)
-        # routes: dict = router_module.routes
+        import_path = f"{app}.{AppModules.router}"
+        router_module = importlib.import_module(import_path)
+        routes: dict = router_module.routes
         for path, view in routes.items():
             if not callable(view):
                 raise TypeError(f'View "{view.__name__}" is not callable object.')

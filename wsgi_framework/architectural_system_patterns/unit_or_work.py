@@ -1,7 +1,5 @@
 from threading import local
 
-from wsgi_framework.architectural_system_patterns.data_mappers import MapperRegistry
-
 
 class UnitOfWork:
     current = local()
@@ -11,7 +9,7 @@ class UnitOfWork:
         self.dirty_objects = []
         self.removed_objects = []
 
-    def set_mapper_registry(self, MapperRegistry: MapperRegistry):
+    def set_mapper_registry(self, MapperRegistry):
         self.MapperRegistry = MapperRegistry
 
     def register_new(self, obj):

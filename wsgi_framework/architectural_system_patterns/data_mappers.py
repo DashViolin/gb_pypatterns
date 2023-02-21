@@ -13,8 +13,6 @@ from wsgi_framework.config import SQLITE_DB_INIT_SCRIPT_PATH, SQLITE_DB_PATH
 if not SQLITE_DB_PATH.exists():
     create_db(SQLITE_DB_PATH, SQLITE_DB_INIT_SCRIPT_PATH)
 
-data_mapper_connection = connect(SQLITE_DB_PATH)
-
 
 class CategoryMapper:
     def __init__(self, connection):
@@ -184,13 +182,20 @@ class StudentMapper:
 
 
 class MapperRegistry:
-    connection = data_mapper_connection
+    connection = connect(SQLITE_DB_PATH)
     mappers = {
         "student": StudentMapper,
         "category": CategoryMapper,
         "course": CourseMapper,
     }
 
-    @classmethod
-    def get_mapper(name):
-        return MapperRegistry.mappers[name](MapperRegistry.connection)
+    @staticmethod
+    def get_mapper(mapper):
+        if isinstance(mapper, str):
+            return MapperRegistry.mappers[mapper](MapperRegistry.connection)
+        if isinstance(mapper, Student):
+            return StudentMapper(MapperRegistry.connection)
+        if isinstance(mapper, Category):
+            return CategoryMapper(MapperRegistry.connection)
+        if isinstance(mapper, Course):
+            return CourseMapper(MapperRegistry.connection)

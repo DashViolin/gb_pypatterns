@@ -1,4 +1,5 @@
-from wsgi_framework.architectural_system_patterns.data_mappers import (
+from wsgi_framework.architectural_system_patterns.data_mappers import MapperRegistry
+from wsgi_framework.architectural_system_patterns.models import (
     Category,
     Course,
     CourseFactory,
@@ -8,13 +9,14 @@ from wsgi_framework.architectural_system_patterns.data_mappers import (
     Teacher,
     UserFactory,
 )
-from wsgi_framework.architectural_system_patterns.unit_or_work import MapperRegistry, UnitOfWork
+from wsgi_framework.architectural_system_patterns.unit_or_work import UnitOfWork
 from wsgi_framework.creational_patterns.constants import COURSE_TYPES, USER_TYPES
 
 UnitOfWork.new_current()
 UnitOfWork.get_current().set_mapper_registry(MapperRegistry)
 
 
+# Antipattern - God object
 class Engine:
     def __init__(self):
         self.courses_types = COURSE_TYPES
@@ -32,7 +34,8 @@ class Engine:
     @property
     def categories(self) -> list[Category]:
         mapper = MapperRegistry.get_mapper("category")
-        return mapper.all()
+        queryset = mapper.all()
+        return queryset
 
     @property
     def courses(self) -> list[Course]:

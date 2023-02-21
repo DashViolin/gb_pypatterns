@@ -1,3 +1,4 @@
+# Antipattern: Soft Code
 interactive_course = "interactive"
 record_course = "record"
 
