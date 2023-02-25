@@ -30,7 +30,7 @@ except NameError:
 try:
     SQLITE_DB_INIT_SCRIPT_PATH = SQLITE_DB_INIT_SCRIPT_PATH
 except NameError:
-    SQLITE_DB_INIT_SCRIPT_PATH = BASE_DIR / "data" / "create_db.sql"
+    SQLITE_DB_INIT_SCRIPT_PATH = BASE_DIR / "wsgi_framework" / "architectural_system_patterns" / "create_db.sql"
 
 
 for path in [SQLITE_DB_PATH.parent, BASE_TEMPLATES_PATH, BASE_STATIC_PATH]:

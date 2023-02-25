@@ -47,22 +47,28 @@ class Programs(ListView):
 @route(url="categories")
 class Categories(ListView):
     template = "list_categories.html"
-    queryset = site.categories
     context = {"set_active": "categories"}
+
+    def get_query_set(self):
+        return site.categories
 
 
 class CreateCategory(CreateView):
     template = "create_category.html"
-    queryset = site.categories
     context = {"set_active": "categories"}
+
+    def get_query_set(self):
+        queryset = site.categories
+        return queryset
 
     def process_query(self, query: dict):
         self.category_id = query.get("category_id")
 
     def create_obj(self, data):
         name = data["name"]
-        category = site.find_category_by_id(self.category_id)
-        site.create_category(name, category)
+        category_id = data.get("category_id")
+        category = site.find_category_by_id(category_id)
+        site.create_category(name=name, category=category)
 
 
 @route(url="/courses")
@@ -72,8 +78,12 @@ class Courses(ListView):
 
     def process_query(self, query: dict):
         category = site.find_category_by_id(query.get("category_id"))
-        self.queryset = category.courses if category else site.courses
         self.context["category"] = category
+
+    def get_query_set(self):
+        category = self.context.get("category")
+        queryset = category.courses if category else site.courses
+        return queryset
 
 
 @route(url="/course-edit")
@@ -95,6 +105,7 @@ class EditCourse(CreateView):
         logger.log(f"new_name={new_name}, {self.course}, {new_category}")
         self.course.name = new_name
         self.course.category = new_category
+        site.edit_course(self.course)
 
 
 class CreateCourse(CreateView):
@@ -108,7 +119,7 @@ class CreateCourse(CreateView):
             name = request["data"]["name"]
             course_type = request["data"]["course_type"]
             category = site.find_category_by_id(self.category_id)
-            course = site.create_course(course_type, name, category)
+            course = site.create_course(type_=course_type, name=name, category=category)
             course.observers.append(email_notifier)
             course.observers.append(sms_notifier)
         elif request["method"] == "GET":
@@ -131,27 +142,26 @@ class CreateCourse(CreateView):
 
 class CopyCourse(CreateView):
     template = "list_courses.html"
-    context = {
-        "set_active": "courses",
-        "objects_list": site.courses,
-    }
+    context = {"set_active": "courses"}
+
+    def get_query_set(self):
+        return site.courses
 
     def create_obj(self, data: dict):
         name = data.get("course_name")
         old_course = site.get_course_by_name(name)
         if old_course:
-            new_course = old_course.clone()
-            new_course.name = f"copy_{name}"
-            old_course.category.add_course(new_course)
-            site.create_course(new_course)
+            new_course = site.clone_course(old_course)
             self.context["category"] = new_course.category.name
 
 
 @route(url="/students/")
 class StudentListView(ListView):
-    queryset = site.students
     template = "list_students.html"
     context = {"set_active": "students"}
+
+    def get_query_set(self):
+        return site.students
 
 
 @route(url="/create-student/")
@@ -167,15 +177,19 @@ class StudentCreateView(CreateView):
 @route(url="/add-student/")
 class AddStudentToCourseView(CreateView):
     template = "add_student_to_course.html"
-    context = {
-        "courses": site.courses,
-        "students": site.students,
-    }
+    context = {"set_active": "students"}
+
+    def get_query_set(self):
+        return {
+            "courses": site.courses,
+            "students": site.students,
+        }
 
     def create_obj(self, data: dict):
-        student = site.get_student(data["student_name"])
-        course = site.get_course_by_name(data["course_name"])
-        site.add_student_to_course(student, course)
+        student = site.get_student(data.get("student_name"))
+        course = site.get_course_by_name(data.get("course_name"))
+        if student and course:
+            site.add_student_to_course(student, course)
 
 
 @route(url="/api/")

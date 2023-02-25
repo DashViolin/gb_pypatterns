@@ -4,9 +4,7 @@ from wsgi_framework.architectural_system_patterns.db_exceptions import (
     DbUpdateException,
     RecordNotFoundException,
 )
-from wsgi_framework.creational_patterns.category import Category
-from wsgi_framework.creational_patterns.courses import Course
-from wsgi_framework.creational_patterns.users import Student
+from wsgi_framework.architectural_system_patterns.models import Category, Course, Student
 
 
 class CategoryMapper:
@@ -15,7 +13,7 @@ class CategoryMapper:
         self.cursor = connection.cursor()
         self.tablename = "category"
 
-    def all(self):
+    def all(self) -> list[Category]:
         statement = f"SELECT * from {self.tablename}"
         self.cursor.execute(statement)
         result = []
@@ -24,9 +22,9 @@ class CategoryMapper:
             if parent_id:
                 for parent_category in result:
                     if parent_category.id == parent_id:
-                        category = Category(name, category=parent_category)
+                        category = Category(name=name, id=id, category=parent_category)
             else:
-                category = Category(name)
+                category = Category(name=name, id=id)
             result.append(category)
         return result
 
@@ -39,7 +37,7 @@ class CategoryMapper:
 
     def insert(self, obj):
         if obj.category:
-            statement = f"INSERT INTO {self.tablename} (name, parent_id) VALUES (?)"
+            statement = f"INSERT INTO {self.tablename} (name, parent_id) VALUES (?, ?)"
             values = (obj.name, obj.category.id)
         else:
             statement = f"INSERT INTO {self.tablename} (name) VALUES (?)"
@@ -79,14 +77,14 @@ class CourseMapper:
         self.cursor = connection.cursor()
         self.tablename = "course"
 
-    def all(self):
+    def all(self) -> list[Course]:
         statement = f"SELECT * from {self.tablename}"
         self.cursor.execute(statement)
         result = []
-        for item in self.cursor.fetchall():
+        for course_id, name, category_id in self.cursor.fetchall():
             for category in self.categories_mapper.all():
-                if category.id == item.category_id:
-                    course = Course(item.id, category)
+                if category_id == category.id:
+                    course = Course(id=course_id, name=name, category=category)
                     result.append(course)
         return result
 
@@ -98,7 +96,7 @@ class CourseMapper:
         raise RecordNotFoundException(id)
 
     def insert(self, obj):
-        statement = f"INSERT INTO {self.tablename} (name, category_id) VALUES (?)"
+        statement = f"INSERT INTO {self.tablename} (name, category_id) VALUES (?, ?)"
         values = (obj.name, obj.category.id)
         self.cursor.execute(statement, values)
         try:
@@ -130,14 +128,13 @@ class StudentMapper:
         self.cursor = connection.cursor()
         self.tablename = "student"
 
-    def all(self):
+    def all(self) -> list[Student]:
         statement = f"SELECT * from {self.tablename}"
         self.cursor.execute(statement)
         result = []
         for item in self.cursor.fetchall():
             id, name = item
-            student = Student(name)
-            student.id = id
+            student = Student(name, id)
             result.append(student)
         return result
 
