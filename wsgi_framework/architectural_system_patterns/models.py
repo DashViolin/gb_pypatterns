@@ -10,8 +10,8 @@ class User(ABC):
     user_id = 1
 
     def __init__(self, name: str, id: int = None):
-        self.id = id or self.user_id
-        self.user_id += 1
+        self.id = id or User.user_id
+        User.user_id = self.id + 1
         self.name = name
 
     def __str__(self) -> str:
@@ -39,9 +39,9 @@ class UserFactory:
 class Category(DomainObject):
     auto_id = 1
 
-    def __init__(self, name, category=None):
-        self.id = Category.auto_id
-        Category.auto_id += 1
+    def __init__(self, name, category: "Category" = None, id: int = None):
+        self.id = id or Category.auto_id
+        Category.auto_id = self.id + 1
         self.name = name
         self.category: "Category" = category
         self.courses = []
@@ -49,8 +49,8 @@ class Category(DomainObject):
     @property
     def full_name(self):
         name = self.name
-        # if self.category:
-        #     name = f'{self.category.full_name} / {name}'
+        if self.category:
+            name = f"{self.category.full_name} / {name}"
         return name
 
     def course_count(self):
@@ -69,18 +69,23 @@ class Category(DomainObject):
         return iter(self.courses)
 
 
-class CoursePrototype:
-    def clone(self):
-        return deepcopy(self)
+class Course(Subject, DomainObject):
+    auto_id = 1
 
-
-class Course(CoursePrototype, Subject, DomainObject):
-    def __init__(self, name, category):
+    def __init__(self, name, category: Category, id=None):
+        self.id = id or Course.auto_id
+        Course.auto_id = self.id + 1
         self.name = name
         self.category = category
         self.category.add_course(self)
         self.students = []
         super().__init__()
+
+    def clone(self):
+        new_course = deepcopy(self)
+        new_course.id = Course.auto_id
+        Course.auto_id += 1
+        return new_course
 
     def __getitem__(self, item):
         return self.students[item]
@@ -110,5 +115,5 @@ class CourseFactory:
     types = {interactive_course: InteractiveCourse, record_course: RecordCourse}
 
     @classmethod
-    def create(cls, type_, name, category) -> InteractiveCourse | RecordCourse:
-        return cls.types[type_](name, category)
+    def create(cls, type_, name, category, id=None) -> InteractiveCourse | RecordCourse:
+        return cls.types[type_](name=name, category=category, id=id)

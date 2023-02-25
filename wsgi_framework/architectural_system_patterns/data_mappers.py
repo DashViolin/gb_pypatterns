@@ -1,6 +1,3 @@
-from sqlite3 import connect
-
-from wsgi_framework.architectural_system_patterns.create_db import create_db
 from wsgi_framework.architectural_system_patterns.db_exceptions import (
     DbCommitException,
     DbDeleteException,
@@ -8,10 +5,6 @@ from wsgi_framework.architectural_system_patterns.db_exceptions import (
     RecordNotFoundException,
 )
 from wsgi_framework.architectural_system_patterns.models import Category, Course, Student
-from wsgi_framework.config import SQLITE_DB_INIT_SCRIPT_PATH, SQLITE_DB_PATH
-
-if not SQLITE_DB_PATH.exists():
-    create_db(SQLITE_DB_PATH, SQLITE_DB_INIT_SCRIPT_PATH)
 
 
 class CategoryMapper:
@@ -20,7 +13,7 @@ class CategoryMapper:
         self.cursor = connection.cursor()
         self.tablename = "category"
 
-    def all(self):
+    def all(self) -> list[Category]:
         statement = f"SELECT * from {self.tablename}"
         self.cursor.execute(statement)
         result = []
@@ -29,9 +22,9 @@ class CategoryMapper:
             if parent_id:
                 for parent_category in result:
                     if parent_category.id == parent_id:
-                        category = Category(name, category=parent_category)
+                        category = Category(name=name, id=id, category=parent_category)
             else:
-                category = Category(name)
+                category = Category(name=name, id=id)
             result.append(category)
         return result
 
@@ -44,7 +37,7 @@ class CategoryMapper:
 
     def insert(self, obj):
         if obj.category:
-            statement = f"INSERT INTO {self.tablename} (name, parent_id) VALUES (?)"
+            statement = f"INSERT INTO {self.tablename} (name, parent_id) VALUES (?, ?)"
             values = (obj.name, obj.category.id)
         else:
             statement = f"INSERT INTO {self.tablename} (name) VALUES (?)"
@@ -84,14 +77,14 @@ class CourseMapper:
         self.cursor = connection.cursor()
         self.tablename = "course"
 
-    def all(self):
+    def all(self) -> list[Course]:
         statement = f"SELECT * from {self.tablename}"
         self.cursor.execute(statement)
         result = []
-        for item in self.cursor.fetchall():
+        for course_id, name, category_id in self.cursor.fetchall():
             for category in self.categories_mapper.all():
-                if category.id == item.category_id:
-                    course = Course(item.id, category)
+                if category_id == category.id:
+                    course = Course(id=course_id, name=name, category=category)
                     result.append(course)
         return result
 
@@ -103,7 +96,7 @@ class CourseMapper:
         raise RecordNotFoundException(id)
 
     def insert(self, obj):
-        statement = f"INSERT INTO {self.tablename} (name, category_id) VALUES (?)"
+        statement = f"INSERT INTO {self.tablename} (name, category_id) VALUES (?, ?)"
         values = (obj.name, obj.category.id)
         self.cursor.execute(statement, values)
         try:
@@ -135,14 +128,13 @@ class StudentMapper:
         self.cursor = connection.cursor()
         self.tablename = "student"
 
-    def all(self):
+    def all(self) -> list[Student]:
         statement = f"SELECT * from {self.tablename}"
         self.cursor.execute(statement)
         result = []
         for item in self.cursor.fetchall():
             id, name = item
-            student = Student(name)
-            student.id = id
+            student = Student(name, id)
             result.append(student)
         return result
 
@@ -179,23 +171,3 @@ class StudentMapper:
             self.connection.commit()
         except Exception as e:
             raise DbDeleteException(e.args)
-
-
-class MapperRegistry:
-    connection = connect(SQLITE_DB_PATH)
-    mappers = {
-        "student": StudentMapper,
-        "category": CategoryMapper,
-        "course": CourseMapper,
-    }
-
-    @staticmethod
-    def get_mapper(mapper):
-        if isinstance(mapper, str):
-            return MapperRegistry.mappers[mapper](MapperRegistry.connection)
-        if isinstance(mapper, Student):
-            return StudentMapper(MapperRegistry.connection)
-        if isinstance(mapper, Category):
-            return CategoryMapper(MapperRegistry.connection)
-        if isinstance(mapper, Course):
-            return CourseMapper(MapperRegistry.connection)
